@@ -6,7 +6,13 @@ import BookingSidebar from "@/components/booking/BookingSidebar";
 import PaymentStep from "@/components/booking/PaymentStep";
 import { PRICE_PER_SEAT } from "@/lib/seatLayout";
 
-export default function BookingClient({ showSlug, showTitle, pricePerSeat }) {
+export default function BookingClient({
+  showSlug,
+  showTitle,
+  pricePerSeat,
+  showDateLabel,
+  showTimeLabel,
+}) {
   const [selected, setSelected] = useState([]);
   const [step, setStep] = useState("seats"); // "seats" | "payment" | "thanks"
   const [orderId, setOrderId] = useState(null);
@@ -82,6 +88,9 @@ export default function BookingClient({ showSlug, showTitle, pricePerSeat }) {
               seats={orderSeats}
               totalAmount={orderTotal}
               customerPhone={orderPhone}
+              showTitle={showTitle}
+              showDateLabel={showDateLabel}
+              showTimeLabel={showTimeLabel}
               onConfirmPayment={() => setStep("payment")}
               onConfirmed={() => setStep("thanks")}
             />

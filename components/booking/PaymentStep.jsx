@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { toPng } from "html-to-image";
 import { KASPI_PAY_URL } from "@/lib/seatLayout";
+import TicketCard from "@/components/booking/TicketCard";
 
 const HOLD_MINUTES = 30;
 
@@ -11,6 +13,9 @@ export default function PaymentStep({
   seats,
   totalAmount,
   customerPhone,
+  showTitle,
+  showDateLabel,
+  showTimeLabel,
   onConfirmPayment,
   onConfirmed,
 }) {
@@ -34,6 +39,20 @@ export default function PaymentStep({
   const ss = secondsLeft % 60;
   const timerStr = `${String(mm).padStart(2, "0")}:${String(ss).padStart(2, "0")}`;
 
+  const downloadTicket = async (elementId, filename) => {
+    const node = document.getElementById(elementId);
+    if (!node) return;
+    try {
+      const dataUrl = await toPng(node, { pixelRatio: 2 });
+      const link = document.createElement("a");
+      link.download = filename;
+      link.href = dataUrl;
+      link.click();
+    } catch (e) {
+      // ignore download errors
+    }
+  };
+
   const handleConfirm = async () => {
     setConfirming(true);
     try {
@@ -53,27 +72,91 @@ export default function PaymentStep({
   };
 
   if (step === "thanks") {
-    const placesStr = seats
+    const grouped = seats
+      .slice()
+      .sort((a, b) => a.row - b.row || a.seat - b.seat)
       .reduce((acc, s) => {
-        const key = s.row;
-        const existing = acc.find((a) => a.row === key);
+        const existing = acc.find((a) => a.row === s.row);
         if (existing) existing.seats.push(s.seat);
-        else acc.push({ row: key, seats: [s.seat] });
+        else acc.push({ row: s.row, seats: [s.seat] });
         return acc;
-      }, [])
+      }, []);
+    const placesStr = grouped
       .map((a) => `Ряд ${a.row}, места ${a.seats.join(", ")}`)
       .join("; ");
 
+    const shortId = String(orderId).slice(0, 6).toUpperCase();
+
     return (
-      <div className="rounded-lg border border-gold/20 bg-dark-card p-6 text-center md:p-8">
-        <p className="font-heading text-xl text-gold">✓ Спасибо! Ваш заказ принят.</p>
-        <p className="mt-3 text-sm text-zinc-300">
+      <div className="space-y-6 rounded-lg border border-gold/20 bg-dark-card p-6 md:p-8">
+        <div className="text-center">
+          <p className="font-heading text-xl text-gold">✓ Ваши билеты готовы!</p>
+          <p className="mt-2 text-sm text-zinc-300">
+            Сохраните билеты — они понадобятся на входе.
+          </p>
+        </div>
+
+        <div className="space-y-6">
+          {seats
+            .slice()
+            .sort((a, b) => a.row - b.row || a.seat - b.seat)
+            .map((s, index) => {
+              const elementId = `ticket-${orderId}-${s.row}-${s.seat}`;
+              const ticketNumber = `${shortId}-${index + 1}`;
+              return (
+                <div key={elementId} className="space-y-3">
+                  <TicketCard
+                    id={elementId}
+                    showTitle={showTitle}
+                    date={showDateLabel}
+                    time={showTimeLabel}
+                    row={s.row}
+                    seat={s.seat}
+                    ticketNumber={ticketNumber}
+                  />
+                  <button
+                    type="button"
+                    onClick={() =>
+                      downloadTicket(
+                        elementId,
+                        `ATMOS-ticket-row-${s.row}-seat-${s.seat}.png`,
+                      )
+                    }
+                    className="inline-flex items-center justify-center rounded-sm border border-gold px-4 py-2 text-[0.7rem] uppercase tracking-[0.24em] text-gold hover:bg-gold hover:text-dark"
+                  >
+                    Скачать билет
+                  </button>
+                </div>
+              );
+            })}
+        </div>
+
+        {seats.length > 1 && (
+          <button
+            type="button"
+            onClick={async () => {
+              for (const s of seats) {
+                const elementId = `ticket-${orderId}-${s.row}-${s.seat}`;
+                // eslint-disable-next-line no-await-in-loop
+                await downloadTicket(
+                  elementId,
+                  `ATMOS-ticket-row-${s.row}-seat-${s.seat}.png`,
+                );
+              }
+            }}
+            className="mt-2 inline-flex items-center justify-center rounded-sm border border-gold/60 px-5 py-2.5 text-[0.7rem] uppercase tracking-[0.24em] text-gold hover:border-gold hover:bg-gold/10"
+          >
+            Скачать все билеты
+          </button>
+        )}
+
+        <p className="text-sm text-zinc-300">
           Мы проверим оплату и свяжемся с вами по номеру {customerPhone}.
         </p>
-        <p className="mt-2 text-sm text-zinc-400">Ваши места: {placesStr}</p>
+
         <Link
           href="/"
-          className="mt-6 inline-block rounded-sm border border-gold bg-gold px-6 py-2.5 font-body text-[0.7rem] font-medium uppercase tracking-[0.26em] text-dark hover:bg-gold-light"
+          className="inline-block rounded-sm border border-gold bg-gold px-6 py-2.5 font-body text-[0.7rem] font-medium uppercase tracking-[0.26em] text-dark hover:bg-gold-light"
         >
           Вернуться на главную
         </Link>

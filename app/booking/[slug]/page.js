@@ -69,6 +69,8 @@ export default async function BookingPage({ params }) {
           showSlug={show.slug}
           showTitle={show.title}
           pricePerSeat={price}
+          showDateLabel={dateStr}
+          showTimeLabel={timeStr}
         />
       </div>
     </main>
