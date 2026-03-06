@@ -46,7 +46,7 @@ export default function Hero() {
     <section
       id="top"
       ref={ref}
-      className="relative flex min-h-screen items-center justify-center overflow-hidden px-5 pt-16 pb-16 md:px-8 md:pt-20 md:pb-16"
+      className="relative flex min-h-screen items-center justify-center overflow-hidden px-5 pt-18 pb-16 md:px-8 md:pt-22 md:pb-16"
     >
       {/* Orbitals & rays */}
       <motion.div
@@ -54,10 +54,10 @@ export default function Hero() {
         className="pointer-events-none absolute inset-0"
         aria-hidden="true"
       >
-        <div className="absolute left-1/2 top-[38%] h-[300px] w-[300px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-gold/10 md:top-1/2 md:h-[420px] md:w-[420px] [animation:orbitSlow_60s_linear_infinite]" />
-        <div className="absolute left-1/2 top-1/2 hidden h-[340px] w-[340px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-gold/10/40 md:block md:h-[560px] md:w-[560px] [animation:orbitSlow_90s_linear_infinite_reverse]" />
+        <div className="absolute left-1/2 top-[38%] h-[340px] w-[340px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-gold/10 md:top-1/2 md:h-[460px] md:w-[460px] [animation:orbitSlow_60s_linear_infinite]" />
+        <div className="absolute left-1/2 top-1/2 hidden h-[380px] w-[380px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-gold/10/40 md:block md:h-[580px] md:w-[580px] [animation:orbitSlow_90s_linear_infinite_reverse]" />
 
-        <div className="absolute left-1/2 top-[38%] h-[340px] w-[340px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(201,168,76,0.16)_0%,rgba(8,8,8,0)_65%)] md:top-1/2 md:h-[460px] md:w-[460px] [animation:glowPulse_7s_ease-in-out_infinite]" />
+        <div className="absolute left-1/2 top-[38%] h-[360px] w-[360px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(201,168,76,0.16)_0%,rgba(8,8,8,0)_65%)] md:top-1/2 md:h-[490px] md:w-[490px] [animation:glowPulse_7s_ease-in-out_infinite]" />
 
         {[...Array(20)].map((_, i) => (
           <div
@@ -94,7 +94,7 @@ export default function Hero() {
         </motion.div>
 
         <motion.div
-          className="mt-4"
+          className="mt-5"
           initial={{ opacity: 0, scaleX: 0 }}
           animate={{ opacity: 1, scaleX: 1 }}
           transition={{ delay: 0.4, duration: 1.1 }}
@@ -120,7 +120,7 @@ export default function Hero() {
         </motion.div>
 
         <motion.div
-          className="mt-8 flex flex-col items-center gap-3 md:gap-4"
+          className="mt-10 flex flex-col items-center gap-3 md:mt-8 md:gap-4"
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.45 }}

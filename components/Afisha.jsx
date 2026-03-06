@@ -38,9 +38,8 @@ export default function Afisha() {
                   <div className="pointer-events-none absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-black/75 via-black/40 to-transparent" />
 
                   <div className="absolute inset-x-3 top-3 z-10 flex items-center justify-center gap-2">
-                    <div className="inline-flex items-center gap-2 rounded-full border border-gold/40 bg-black/80 px-3 py-1.5 text-[0.63rem] font-body uppercase tracking-[0.26em] text-gold shadow-[0_0_18px_rgba(0,0,0,0.8)]">
-                      <span className="h-1.5 w-1.5 rounded-full bg-gold" />
-                      <span>{show.genre}</span>
+                    <div className="inline-flex items-center justify-center rounded-full border border-gold/40 bg-black/80 px-4 py-1.5 text-[0.63rem] font-body uppercase tracking-[0.26em] text-gold shadow-[0_0_18px_rgba(0,0,0,0.8)]">
+                      <span className="text-center">{show.genre}</span>
                     </div>
                     {show.date && (
                       <div className="rounded-full border border-gold bg-black/85 px-3 py-1.5 text-[0.63rem] font-body font-semibold uppercase tracking-[0.2em] text-gold shadow-[0_0_22px_rgba(0,0,0,0.9)]">
