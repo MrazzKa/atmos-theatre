@@ -1,7 +1,5 @@
 "use client";
 
-import clsx from "clsx";
-
 export default function TicketCard({
   id,
   showTitle,

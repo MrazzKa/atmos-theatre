@@ -25,6 +25,32 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    if (open) {
+      const scrollY = window.scrollY;
+      document.body.style.overflow = "hidden";
+      document.body.style.position = "fixed";
+      document.body.style.width = "100%";
+      document.body.style.top = `-${scrollY}px`;
+    } else {
+      const top = document.body.style.top;
+      document.body.style.overflow = "";
+      document.body.style.position = "";
+      document.body.style.width = "";
+      document.body.style.top = "";
+      if (top) {
+        const y = parseInt(top || "0", 10) * -1;
+        window.scrollTo(0, Number.isNaN(y) ? 0 : y);
+      }
+    }
+    return () => {
+      document.body.style.overflow = "";
+      document.body.style.position = "";
+      document.body.style.width = "";
+      document.body.style.top = "";
+    };
+  }, [open]);
+
   const handleNavClick = (id) => {
     setOpen(false);
     const el = document.getElementById(id);
@@ -36,11 +62,12 @@ export default function Navbar() {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-30 transition-all duration-500 ${
+      className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
         scrolled
           ? "border-b border-gold/5 bg-[rgba(8,8,8,0.93)]/90 backdrop-blur-xl py-2"
           : "bg-transparent py-4"
       }`}
+      style={{ paddingTop: "env(safe-area-inset-top)" }}
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between px-5 md:px-8">
         <button
@@ -105,7 +132,7 @@ export default function Navbar() {
 
       {open && (
         <div
-          className="fixed inset-0 z-20 flex flex-col items-center justify-center gap-4 bg-[rgba(8,8,8,0.97)] px-6 text-center backdrop-blur-2xl lg:hidden"
+          className="fixed inset-0 z-40 flex flex-col items-center justify-center gap-4 bg-[rgba(8,8,8,0.97)] px-6 text-center backdrop-blur-2xl lg:hidden"
           onClick={() => setOpen(false)}
         >
           <div

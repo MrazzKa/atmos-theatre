@@ -6,8 +6,7 @@ import Reveal from "./ui/Reveal";
 import SectionHeader from "./ui/SectionHeader";
 import { shows } from "../lib/data";
 
-const WHATSAPP_SHOWS =
-  "https://wa.me/77762120345?text=Здравствуйте! Хочу узнать о ближайших показах";
+const INSTAGRAM_DM = "https://ig.me/m/atmos_theatre";
 
 export default function Afisha() {
   return (
@@ -38,16 +37,17 @@ export default function Afisha() {
                   {/* Верхний затемняющий градиент, чтобы бейджи читались на ярких афишах */}
                   <div className="pointer-events-none absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-black/75 via-black/40 to-transparent" />
 
-                  <div className="absolute left-3 top-3 inline-flex items-center gap-2 rounded-full border border-gold/40 bg-black/80 px-3 py-1.5 text-[0.63rem] font-body uppercase tracking-[0.26em] text-gold shadow-[0_0_18px_rgba(0,0,0,0.8)]">
-                    <span className="h-1.5 w-1.5 rounded-full bg-gold" />
-                    <span>{show.genre}</span>
-                  </div>
-
-                  {show.date && (
-                    <div className="absolute right-3 top-3 rounded-full border border-gold bg-black/85 px-3 py-1.5 text-[0.63rem] font-body font-semibold uppercase tracking-[0.2em] text-gold shadow-[0_0_22px_rgba(0,0,0,0.9)]">
-                      {show.date}
+                  <div className="absolute inset-x-3 top-3 z-10 flex items-center justify-center gap-2">
+                    <div className="inline-flex items-center gap-2 rounded-full border border-gold/40 bg-black/80 px-3 py-1.5 text-[0.63rem] font-body uppercase tracking-[0.26em] text-gold shadow-[0_0_18px_rgba(0,0,0,0.8)]">
+                      <span className="h-1.5 w-1.5 rounded-full bg-gold" />
+                      <span>{show.genre}</span>
                     </div>
-                  )}
+                    {show.date && (
+                      <div className="rounded-full border border-gold bg-black/85 px-3 py-1.5 text-[0.63rem] font-body font-semibold uppercase tracking-[0.2em] text-gold shadow-[0_0_22px_rgba(0,0,0,0.9)]">
+                        {show.date}
+                      </div>
+                    )}
+                  </div>
 
                   <div className="pointer-events-none absolute bottom-2 right-3 font-heading text-5xl text-gold/10">
                     {show.num}
@@ -85,7 +85,7 @@ export default function Afisha() {
                       </Link>
                     ) : (
                       <a
-                        href={WHATSAPP_SHOWS}
+                        href={INSTAGRAM_DM}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex w-full items-center justify-center rounded-sm border border-gold/40 px-3 py-2 text-[0.7rem] font-medium uppercase tracking-[0.26em] text-gold hover:border-gold hover:bg-gold/10"

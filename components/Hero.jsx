@@ -46,7 +46,7 @@ export default function Hero() {
     <section
       id="top"
       ref={ref}
-      className="relative flex min-h-screen items-center justify-center overflow-hidden px-5 pt-28 pb-20 md:px-8 md:pt-40 md:pb-24"
+      className="relative flex min-h-screen items-center justify-center overflow-hidden px-5 pt-16 pb-16 md:px-8 md:pt-20 md:pb-16"
     >
       {/* Orbitals & rays */}
       <motion.div
@@ -91,6 +91,15 @@ export default function Hero() {
             quality={100}
             className="h-auto w-[clamp(160px,24vw,240px)] drop-shadow-[0_0_60px_rgba(201,168,76,0.2)] [animation:float-soft_7s_ease-in-out_infinite]"
           />
+        </motion.div>
+
+        <motion.div
+          className="mt-4"
+          initial={{ opacity: 0, scaleX: 0 }}
+          animate={{ opacity: 1, scaleX: 1 }}
+          transition={{ delay: 0.4, duration: 1.1 }}
+        >
+          <div className="mx-auto h-px w-40 origin-center bg-gradient-to-r from-transparent via-gold/50 to-transparent" />
         </motion.div>
 
         <motion.div

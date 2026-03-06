@@ -3,8 +3,7 @@
 import { contacts } from "../lib/data";
 import Reveal from "./ui/Reveal";
 
-const WHATSAPP_GENERIC =
-  "https://wa.me/77762120345?text=Здравствуйте! Хочу узнать о ближайших показах";
+const INSTAGRAM_DM = "https://ig.me/m/atmos_theatre";
 
 function IconCircle({ children, href, label }) {
   const content = (
@@ -63,9 +62,7 @@ export default function Contacts() {
               <p className="mt-1">
                 Телефон / WhatsApp:{" "}
                 <a
-                  href={contacts.whatsapp}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href={`tel:${contacts.phone.replace(/\s/g, "")}`}
                   className="text-gold hover:text-gold-light"
                 >
                   {contacts.phone}
@@ -73,6 +70,9 @@ export default function Contacts() {
               </p>
               <p className="mt-1 text-zinc-400">
                 Художественный руководитель: {contacts.director}
+              </p>
+              <p className="mt-1 text-[0.8rem] text-zinc-400">
+                Для связи по спектаклям пишите нам в Instagram Direct.
               </p>
             </div>
 
@@ -99,7 +99,7 @@ export default function Contacts() {
 
             <div className="pt-4">
               <a
-                href={WHATSAPP_GENERIC}
+                href={INSTAGRAM_DM}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center rounded-sm border border-gold px-6 py-2.5 font-body text-[0.7rem] uppercase tracking-[0.26em] text-gold transition hover:bg-gold hover:text-dark"
