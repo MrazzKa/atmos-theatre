@@ -1,12 +1,10 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import Reveal from "./ui/Reveal";
 import SectionHeader from "./ui/SectionHeader";
 import { shows } from "../lib/data";
-
-const WHATSAPP_PREMIERE =
-  "https://wa.me/77762120345?text=Здравствуйте! Хочу купить билет на «В погоне за Дон Жуаном» 27 марта";
 
 const WHATSAPP_SHOWS =
   "https://wa.me/77762120345?text=Здравствуйте! Хочу узнать о ближайших показах";
@@ -78,18 +76,23 @@ export default function Afisha() {
                   </p>
 
                   <div className="mt-4">
-                    <a
-                      href={show.isPremiere ? WHATSAPP_PREMIERE : WHATSAPP_SHOWS}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`inline-flex w-full items-center justify-center rounded-sm border px-3 py-2 text-[0.7rem] font-medium uppercase tracking-[0.26em] ${
-                        show.isPremiere
-                          ? "border-gold bg-gold text-dark hover:border-gold-light hover:bg-gold-light"
-                          : "border-gold/40 text-gold hover:border-gold hover:bg-gold/10"
-                      }`}
-                    >
-                      {show.isPremiere ? "Купить билет" : "Узнать о показах"}
-                    </a>
+                    {show.bookingUrl ? (
+                      <Link
+                        href={show.bookingUrl}
+                        className="inline-flex w-full items-center justify-center rounded-sm border border-gold bg-gold px-3 py-2 text-[0.7rem] font-medium uppercase tracking-[0.26em] text-dark hover:border-gold-light hover:bg-gold-light"
+                      >
+                        Купить билет
+                      </Link>
+                    ) : (
+                      <a
+                        href={WHATSAPP_SHOWS}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex w-full items-center justify-center rounded-sm border border-gold/40 px-3 py-2 text-[0.7rem] font-medium uppercase tracking-[0.26em] text-gold hover:border-gold hover:bg-gold/10"
+                      >
+                        Узнать о показах
+                      </a>
+                    )}
                   </div>
                 </div>
               </article>
