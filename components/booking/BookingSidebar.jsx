@@ -7,12 +7,16 @@ const PHONE_REG = /^\+7\d{10}$/;
 /** Форматирует ввод как +7 (XXX) XXX-XX-XX. Пользователь вводит только цифры. */
 function formatPhoneDisplay(v) {
   let digits = v.replace(/\D/g, "");
-  if (digits.length > 11) digits = digits.slice(0, 11);
-  // Одна цифра 7 или 8 — только код страны, в скобках ничего не показываем (чтобы не дублировать семёрку)
-  if (digits.length === 1 && (digits === "7" || digits === "8")) return "+7 (";
-  // 11 цифр: 7/8 + 10 — убираем код страны, форматируем 10 цифр
-  if (digits.length === 11 && (digits.startsWith("8") || digits.startsWith("7"))) digits = digits.slice(1);
-  if (digits.length === 0) return "";
+  // Если в поле уже наш формат (+7 ...), первая 7 — от префикса, не от пользователя: не считаем её
+  if (v.trim().startsWith("+7")) {
+    if (digits.startsWith("7")) digits = digits.slice(1);
+  } else {
+    // Вставка/ввод без +7: 8 или 7 в начале — код страны
+    if (digits.length === 11 && (digits.startsWith("7") || digits.startsWith("8"))) digits = digits.slice(1);
+    if (digits.length === 1 && (digits === "7" || digits === "8")) return "+7 (";
+  }
+  if (digits.length > 10) digits = digits.slice(0, 10);
+  if (digits.length === 0) return "+7 (";
   if (digits.length <= 3) return `+7 (${digits}`;
   if (digits.length <= 6) return `+7 (${digits.slice(0, 3)}) ${digits.slice(3)}`;
   return `+7 (${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6, 8)}-${digits.slice(8, 10)}`;
