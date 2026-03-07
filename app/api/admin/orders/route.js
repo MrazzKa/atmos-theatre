@@ -20,6 +20,7 @@ export async function GET(request) {
         status,
         created_at,
         confirmed_at,
+        payment_pdf_url,
         shows(id, title, date, time, slug)
       `)
       .order('created_at', { ascending: false });

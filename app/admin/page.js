@@ -188,6 +188,7 @@ export default function AdminPage() {
                   <th className="p-3">Телефон</th>
                   <th className="p-3">Места</th>
                   <th className="p-3">Сумма</th>
+                  <th className="p-3">Подтверждение</th>
                   <th className="p-3">Статус</th>
                   <th className="p-3">Дата</th>
                   <th className="p-3">Действия</th>
@@ -221,6 +222,20 @@ export default function AdminPage() {
                       <td className="p-3 text-zinc-300">{o.customer_phone}</td>
                       <td className="p-3 text-zinc-400">{placesStr || "—"}</td>
                       <td className="p-3 text-gold">{o.total_amount?.toLocaleString("ru")}₸</td>
+                      <td className="p-3">
+                        {o.payment_pdf_url ? (
+                          <a
+                            href={o.payment_pdf_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-gold hover:underline"
+                          >
+                            PDF
+                          </a>
+                        ) : (
+                          <span className="text-zinc-500">—</span>
+                        )}
+                      </td>
                       <td className="p-3">{STATUS_LABELS[o.status] ?? o.status}</td>
                       <td className="p-3 text-zinc-500">{dateStr}</td>
                       <td className="p-3">
