@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
-import { notifyTelegram } from '@/lib/telegram';
 
 function isTaken(booked, row, seat, section) {
   return booked.some(
@@ -11,7 +10,7 @@ function isTaken(booked, row, seat, section) {
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { showSlug, customerName, customerPhone, seats, paymentPdfUrl } = body;
+    const { showSlug, customerName, customerPhone, seats } = body;
     if (!showSlug || !customerName || !customerPhone || !Array.isArray(seats) || seats.length === 0) {
       return NextResponse.json(
         { error: 'showSlug, customerName, customerPhone, seats required' },
@@ -46,19 +45,15 @@ export async function POST(request) {
 
     const totalAmount = seats.length * (show.price || 3000);
 
-    const insertPayload = {
-      show_id: show.id,
-      customer_name: customerName,
-      customer_phone: customerPhone,
-      total_amount: totalAmount,
-      status: 'pending',
-    };
-    if (paymentPdfUrl && typeof paymentPdfUrl === 'string' && paymentPdfUrl.startsWith('http')) {
-      insertPayload.payment_pdf_url = paymentPdfUrl;
-    }
     const { data: order, error: orderError } = await supabase
       .from('orders')
-      .insert(insertPayload)
+      .insert({
+        show_id: show.id,
+        customer_name: customerName,
+        customer_phone: customerPhone,
+        total_amount: totalAmount,
+        status: 'draft',
+      })
       .select('id')
       .single();
 
@@ -81,35 +76,6 @@ export async function POST(request) {
       console.error(bookedError);
       return NextResponse.json({ error: 'Failed to book seats' }, { status: 500 });
     }
-
-    const dateStr = show.date ? new Date(show.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' }) : '';
-    const timeStr = show.time || '19:00';
-    const placesList = seats
-      .reduce((acc, s) => {
-        const key = `Ряд ${s.row}`;
-        const existing = acc.find((a) => a.row === key);
-        if (existing) existing.seats.push(s.seat);
-        else acc.push({ row: key, seats: [s.seat] });
-        return acc;
-      }, [])
-      .map((a) => `  ${a.row} — места ${a.seats.join(', ')}`)
-      .join('\n');
-
-    const msg = `🎭 <b>Новый заказ!</b>
-
-📍 ${show.title}
-📅 ${dateStr}, ${timeStr}
-💰 Цена: ${(show.price || 3000).toLocaleString('ru')}₸ × ${seats.length} = ${totalAmount.toLocaleString('ru')}₸
-
-👤 ${customerName}
-📱 ${customerPhone}
-
-💺 Места:
-${placesList}
-
-⏳ Ожидает оплаты через Kaspi`;
-
-    await notifyTelegram(msg);
 
     return NextResponse.json({ orderId: order.id, totalAmount });
   } catch (err) {

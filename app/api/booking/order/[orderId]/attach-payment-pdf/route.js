@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { getSupabaseAdmin } from '@/lib/supabase';
+import { sendOrderWithButtons } from '@/lib/telegram';
 
 const BUCKET = 'payment-pdfs';
 const MAX_SIZE = 10 * 1024 * 1024; // 10 MB
@@ -58,15 +59,59 @@ export async function POST(request, { params }) {
     const { data: urlData } = admin.storage.from(BUCKET).getPublicUrl(uploadData.path);
     const paymentPdfUrl = urlData.publicUrl;
 
-    const { error: updateError } = await supabase
+    const { data: order, error: updateError } = await supabase
       .from('orders')
-      .update({ payment_pdf_url: paymentPdfUrl })
-      .eq('id', orderId);
+      .update({ payment_pdf_url: paymentPdfUrl, status: 'pending' })
+      .eq('id', orderId)
+      .select('id, customer_name, customer_phone, total_amount, show_id')
+      .single();
 
-    if (updateError) {
+    if (updateError || !order) {
       console.error('Order update error:', updateError);
       return NextResponse.json({ error: 'Не удалось сохранить ссылку на PDF' }, { status: 500 });
     }
+
+    const { data: show } = await supabase
+      .from('shows')
+      .select('id, title, date, time, price')
+      .eq('id', order.show_id)
+      .single();
+
+    const { data: bookedSeats } = await supabase
+      .from('booked_seats')
+      .select('row_number, seat_number, section')
+      .eq('order_id', orderId);
+
+    const seats = bookedSeats || [];
+    const placesList = seats
+      .reduce((acc, s) => {
+        const key = `Ряд ${s.row_number}`;
+        const existing = acc.find((a) => a.row === key);
+        if (existing) existing.seats.push(s.seat_number);
+        else acc.push({ row: key, seats: [s.seat_number] });
+        return acc;
+      }, [])
+      .map((a) => `  ${a.row} — места ${a.seats.join(', ')}`)
+      .join('\n');
+
+    const dateStr = show?.date ? new Date(show.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' }) : '';
+    const timeStr = show?.time || '19:00';
+    const price = show?.price || 3000;
+    const msg = `🎭 <b>Новый заказ!</b>
+
+📍 ${show?.title || 'Спектакль'}
+📅 ${dateStr}, ${timeStr}
+💰 ${price.toLocaleString('ru')}₸ × ${seats.length} = ${(order.total_amount || 0).toLocaleString('ru')}₸
+
+👤 ${order.customer_name}
+📱 ${order.customer_phone}
+
+💺 Места:
+${placesList}
+
+⏳ Подтвердите или отмените — в боте или в админке`;
+
+    await sendOrderWithButtons(orderId, msg, paymentPdfUrl);
 
     return NextResponse.json({ ok: true });
   } catch (err) {

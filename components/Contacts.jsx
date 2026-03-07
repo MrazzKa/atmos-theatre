@@ -97,6 +97,35 @@ export default function Contacts() {
               </div>
             </div>
 
+            {(contacts.supportPhone || contacts.supportTelegram) && (
+              <div className="pt-2">
+                <p className="mb-2 text-[0.8rem] uppercase tracking-[0.26em] text-zinc-500">
+                  Техподдержка сайта
+                </p>
+                <p className="text-sm text-zinc-300">
+                  {contacts.supportPhone && (
+                    <a
+                      href={`tel:${contacts.supportPhone.replace(/\s/g, "")}`}
+                      className="text-gold hover:underline"
+                    >
+                      {contacts.supportPhone}
+                    </a>
+                  )}
+                  {contacts.supportPhone && contacts.supportTelegram && " · "}
+                  {contacts.supportTelegram && (
+                    <a
+                      href={contacts.supportTelegram}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-gold hover:underline"
+                    >
+                      Telegram
+                    </a>
+                  )}
+                </p>
+              </div>
+            )}
+
             <div className="pt-4">
               <a
                 href={INSTAGRAM_DM}

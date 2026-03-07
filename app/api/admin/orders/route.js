@@ -23,6 +23,7 @@ export async function GET(request) {
         payment_pdf_url,
         shows(id, title, date, time, slug)
       `)
+      .neq('status', 'draft')
       .order('created_at', { ascending: false });
 
     if (error) {

@@ -72,8 +72,12 @@ export default function AdminPage() {
     }
   };
 
-  const handleCancel = async (orderId) => {
-    if (!confirm("Отменить заказ? Места будут освобождены.")) return;
+  const handleCancel = async (orderId, status) => {
+    const msg =
+      status === "paid"
+        ? "Освободить места? Заказ будет отменён, места снова появятся на карте. Возврат денег обрабатывается отдельно."
+        : "Отменить заказ? Места будут освобождены.";
+    if (!confirm(msg)) return;
     try {
       const res = await fetch("/api/admin/cancel", {
         method: "POST",
@@ -240,7 +244,7 @@ export default function AdminPage() {
                       <td className="p-3 text-zinc-500">{dateStr}</td>
                       <td className="p-3">
                         {o.status === "pending" && (
-                          <span className="flex gap-2">
+                          <span className="flex flex-wrap gap-2">
                             <button
                               type="button"
                               onClick={() => handleConfirm(o.id)}
@@ -251,13 +255,23 @@ export default function AdminPage() {
                             </button>
                             <button
                               type="button"
-                              onClick={() => handleCancel(o.id)}
+                              onClick={() => handleCancel(o.id, o.status)}
                               className="text-red-400 hover:text-red-300"
                               title="Отменить"
                             >
                               ✗ Отменить
                             </button>
                           </span>
+                        )}
+                        {(o.status === "paid" || o.status === "expired") && (
+                          <button
+                            type="button"
+                            onClick={() => handleCancel(o.id, o.status)}
+                            className="text-amber-400 hover:text-amber-300"
+                            title="Освободить места на карте"
+                          >
+                            Освободить места
+                          </button>
                         )}
                       </td>
                     </tr>

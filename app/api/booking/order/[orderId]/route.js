@@ -15,7 +15,7 @@ export async function GET(request, { params }) {
         status,
         customer_phone,
         total_amount,
-        shows(title, date, time)
+        shows(title, date, time, slug)
       `)
       .eq('id', orderId)
       .single();
@@ -43,6 +43,7 @@ export async function GET(request, { params }) {
       showTitle: show.title || '',
       showDateLabel: dateStr,
       showTimeLabel: timeStr,
+      showSlug: show.slug || '',
       seats: (seats || []).map((s) => ({ row: s.row_number, seat: s.seat_number, section: s.section })),
     });
   } catch (err) {

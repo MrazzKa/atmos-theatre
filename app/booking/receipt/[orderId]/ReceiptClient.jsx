@@ -58,8 +58,32 @@ export default function ReceiptClient({ orderId }) {
     );
   }
 
-  const { status, showTitle, showDateLabel, showTimeLabel, seats } = data;
+  const { status, showTitle, showDateLabel, showTimeLabel, showSlug, seats } = data;
   const shortId = String(orderId).slice(0, 6).toUpperCase();
+
+  if (status === "draft") {
+    return (
+      <div className="space-y-4 rounded-lg border border-gold/20 bg-dark-card p-6 md:p-8">
+        <h1 className="font-heading text-xl text-gold">Приложите чек оплаты</h1>
+        <p className="text-sm text-zinc-300">
+          Заказ создан, но вы ещё не нажали «Я оплатил» с прикреплённым PDF. Вернитесь на страницу оплаты, приложите скрин или чек в PDF и нажмите «Я оплатил» — после этого заявка попадёт к нам и здесь появятся инструкции.
+        </p>
+        <p className="text-[0.7rem] text-zinc-500">Заказ #{shortId}</p>
+        {showSlug ? (
+          <Link
+            href={`/booking/${showSlug}`}
+            className="inline-block rounded-sm border border-gold bg-gold px-5 py-2 font-body text-[0.7rem] uppercase tracking-wider text-dark hover:bg-gold-light"
+          >
+            Вернуться к оплате
+          </Link>
+        ) : (
+          <Link href="/" className="inline-block rounded-sm border border-gold px-5 py-2 text-[0.7rem] uppercase tracking-wider text-gold hover:bg-gold/10">
+            На главную
+          </Link>
+        )}
+      </div>
+    );
+  }
 
   if (status === "pending" || status === "expired") {
     return (

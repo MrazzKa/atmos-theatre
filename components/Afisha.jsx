@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Reveal from "./ui/Reveal";
@@ -9,6 +10,8 @@ import { shows } from "../lib/data";
 const INSTAGRAM_DM = "https://ig.me/m/atmos_theatre";
 
 export default function Afisha() {
+  const [videoModal, setVideoModal] = useState(null);
+
   return (
     <section
       id="afisha"
@@ -21,7 +24,12 @@ export default function Afisha() {
           {shows.map((show, index) => (
             <Reveal key={show.id} delay={index * 0.05}>
               <article className="group flex h-full flex-col overflow-hidden rounded-md border border-gold/10 bg-gradient-to-b from-[#151515] to-[#0b0b0b] shadow-[0_22px_70px_rgba(0,0,0,0.75)] transition-transform duration-500 hover:-translate-y-2 hover:border-gold/25">
-                <div className="relative h-[170px] overflow-hidden">
+                <div
+                  className="relative h-[170px] overflow-hidden cursor-pointer"
+                  onClick={() => show.videoReel && setVideoModal(show)}
+                  role={show.videoReel ? "button" : undefined}
+                  aria-label={show.videoReel ? `Смотреть ролик: ${show.title}` : undefined}
+                >
                   {show.image ? (
                     <Image
                       src={show.image}
@@ -32,6 +40,16 @@ export default function Afisha() {
                     />
                   ) : (
                     <div className="h-full w-full bg-gradient-to-br from-[#141414] via-[#101010] to-[#060606]" />
+                  )}
+
+                  {show.videoReel && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 transition opacity duration-300 group-hover:opacity-100">
+                      <span className="rounded-full border-2 border-gold bg-gold/20 p-4 text-gold">
+                        <svg className="h-10 w-10 ml-1" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                          <path d="M8 5v14l11-7z" />
+                        </svg>
+                      </span>
+                    </div>
                   )}
 
                   {/* Верхний затемняющий градиент, чтобы бейджи читались на ярких афишах */}
@@ -72,22 +90,40 @@ export default function Afisha() {
 
                   <p className="mt-2 flex-1 text-[0.82rem] leading-relaxed text-zinc-300">
                     {show.description}
+                    {show.limitedSeats && (
+                      <span className="mt-2 block text-[0.75rem] text-gold/90">
+                        Места ограничены ({show.limitedSeats} мест).
+                      </span>
+                    )}
                   </p>
 
-                  <div className="mt-4">
-                    {show.bookingUrl ? (
+                  <div className="mt-4 space-y-2">
+                    {show.bookingUrl && (
                       <Link
                         href={show.bookingUrl}
-                        className="inline-flex w-full items-center justify-center rounded-sm border border-gold bg-gold px-3 py-2 text-[0.7rem] font-medium uppercase tracking-[0.26em] text-dark transition-all hover:border-gold-light hover:bg-gold-light active:scale-[0.97] active:ring-2 active:ring-gold active:ring-offset-2 active:ring-offset-[#0b0b0b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b0b0b]"
+                        className="inline-flex w-full items-center justify-center rounded-sm border border-gold bg-gold px-3 py-2 text-[0.7rem] font-medium uppercase tracking-[0.26em] text-dark transition-all duration-150 hover:border-gold-light hover:bg-gold-light hover:shadow-[0_0_20px_rgba(212,175,55,0.35)] active:scale-[0.96] active:shadow-[0_0_28px_rgba(212,175,55,0.55)] active:ring-2 active:ring-gold active:ring-offset-2 active:ring-offset-[#0b0b0b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b0b0b] focus-visible:shadow-[0_0_20px_rgba(212,175,55,0.4)]"
                       >
                         Купить билет
                       </Link>
-                    ) : (
+                    )}
+                    {show.videoReel && (
+                      <button
+                        type="button"
+                        onClick={() => setVideoModal(show)}
+                        className="inline-flex w-full items-center justify-center gap-2 rounded-sm border border-gold/60 px-3 py-2 text-[0.7rem] font-medium uppercase tracking-[0.26em] text-gold transition-all duration-150 hover:border-gold hover:bg-gold/10 hover:shadow-[0_0_18px_rgba(212,175,55,0.25)] active:scale-[0.96] active:shadow-[0_0_26px_rgba(212,175,55,0.45)] active:ring-2 active:ring-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+                      >
+                        <span className="rounded-full border border-gold p-0.5">
+                          <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                        </span>
+                        Смотреть ролик
+                      </button>
+                    )}
+                    {!show.bookingUrl && (
                       <a
                         href={INSTAGRAM_DM}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex w-full items-center justify-center rounded-sm border border-gold/40 px-3 py-2 text-[0.7rem] font-medium uppercase tracking-[0.26em] text-gold transition-all hover:border-gold hover:bg-gold/10 active:scale-[0.97] active:ring-2 active:ring-gold active:ring-offset-2 active:ring-offset-[#0b0b0b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b0b0b]"
+                        className="inline-flex w-full items-center justify-center rounded-sm border border-gold/40 px-3 py-2 text-[0.7rem] font-medium uppercase tracking-[0.26em] text-gold transition-all duration-150 hover:border-gold hover:bg-gold/10 hover:shadow-[0_0_18px_rgba(212,175,55,0.25)] active:scale-[0.96] active:shadow-[0_0_26px_rgba(212,175,55,0.45)] active:ring-2 active:ring-gold active:ring-offset-2 active:ring-offset-[#0b0b0b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b0b0b]"
                       >
                         Узнать о показах
                       </a>
@@ -99,6 +135,39 @@ export default function Afisha() {
           ))}
         </div>
       </div>
+
+      {videoModal?.videoReel && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4"
+          onClick={() => setVideoModal(null)}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Закрыть видео"
+        >
+          <div
+            className="relative max-h-[85vh] w-full max-w-[min(360px,95vw)]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setVideoModal(null)}
+              className="absolute -top-10 right-0 text-zinc-400 hover:text-cream"
+              aria-label="Закрыть"
+            >
+              <span className="text-2xl">×</span>
+            </button>
+            <p className="mb-2 text-center text-sm text-gold">{videoModal.title} · Закусилье</p>
+            <video
+              src={videoModal.videoReel}
+              className="aspect-[9/16] w-full rounded-lg border border-gold/30 object-cover"
+              controls
+              autoPlay
+              muted
+              playsInline
+            />
+          </div>
+        </div>
+      )}
     </section>
   );
 }
