@@ -8,7 +8,9 @@ const PHONE_REG = /^\+7\d{10}$/;
 function formatPhoneDisplay(v) {
   let digits = v.replace(/\D/g, "");
   if (digits.length > 11) digits = digits.slice(0, 11);
-  // 8XXXXXXXXXX или 7XXXXXXXXXX → 10 цифр (национальный номер)
+  // Одна цифра 7 или 8 — только код страны, в скобках ничего не показываем (чтобы не дублировать семёрку)
+  if (digits.length === 1 && (digits === "7" || digits === "8")) return "+7 (";
+  // 11 цифр: 7/8 + 10 — убираем код страны, форматируем 10 цифр
   if (digits.length === 11 && (digits.startsWith("8") || digits.startsWith("7"))) digits = digits.slice(1);
   if (digits.length === 0) return "";
   if (digits.length <= 3) return `+7 (${digits}`;
@@ -29,7 +31,7 @@ export default function BookingSidebar({
 
   const total = selected.length * pricePerSeat;
   const digitsOnly = phone.replace(/\D/g, "");
-  const hasEleven = digitsOnly.length === 11 && digitsOnly.startsWith("7");
+  const hasEleven = digitsOnly.length === 11 && (digitsOnly.startsWith("7") || digitsOnly.startsWith("8"));
   const nationalTen = hasEleven ? digitsOnly.slice(1) : digitsOnly.slice(-10);
   const phoneValid = nationalTen.length === 10;
   const formValid =
@@ -45,7 +47,7 @@ export default function BookingSidebar({
     e.preventDefault();
     if (!formValid || loading) return;
     const digits = phone.replace(/\D/g, "");
-    const ten = digits.length === 11 && digits.startsWith("7") ? digits.slice(1) : digits.slice(-10);
+    const ten = digits.length === 11 && (digits.startsWith("7") || digits.startsWith("8")) ? digits.slice(1) : digits.slice(-10);
     onSubmit({
       customerName: name.trim(),
       customerPhone: ten.length === 10 ? `+7${ten}` : phone.trim(),
