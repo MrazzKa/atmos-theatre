@@ -78,7 +78,7 @@ export default function Afisha() {
                     {show.bookingUrl ? (
                       <Link
                         href={show.bookingUrl}
-                        className="inline-flex w-full items-center justify-center rounded-sm border border-gold bg-gold px-3 py-2 text-[0.7rem] font-medium uppercase tracking-[0.26em] text-dark hover:border-gold-light hover:bg-gold-light"
+                        className="inline-flex w-full items-center justify-center rounded-sm border border-gold bg-gold px-3 py-2 text-[0.7rem] font-medium uppercase tracking-[0.26em] text-dark transition-all hover:border-gold-light hover:bg-gold-light active:scale-[0.97] active:ring-2 active:ring-gold active:ring-offset-2 active:ring-offset-[#0b0b0b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b0b0b]"
                       >
                         Купить билет
                       </Link>
@@ -87,7 +87,7 @@ export default function Afisha() {
                         href={INSTAGRAM_DM}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex w-full items-center justify-center rounded-sm border border-gold/40 px-3 py-2 text-[0.7rem] font-medium uppercase tracking-[0.26em] text-gold hover:border-gold hover:bg-gold/10"
+                        className="inline-flex w-full items-center justify-center rounded-sm border border-gold/40 px-3 py-2 text-[0.7rem] font-medium uppercase tracking-[0.26em] text-gold transition-all hover:border-gold hover:bg-gold/10 active:scale-[0.97] active:ring-2 active:ring-gold active:ring-offset-2 active:ring-offset-[#0b0b0b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b0b0b]"
                       >
                         Узнать о показах
                       </a>

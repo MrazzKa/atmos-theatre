@@ -32,7 +32,6 @@ export default function BookingSidebar({
 }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [pdfFile, setPdfFile] = useState(null);
 
   const total = selected.length * pricePerSeat;
   const digitsOnly = phone.replace(/\D/g, "");
@@ -42,8 +41,7 @@ export default function BookingSidebar({
   const formValid =
     selected.length > 0 &&
     name.trim().length >= 2 &&
-    phoneValid &&
-    pdfFile;
+    phoneValid;
 
   const handlePhoneChange = (e) => {
     setPhone(formatPhoneDisplay(e.target.value));
@@ -58,7 +56,6 @@ export default function BookingSidebar({
       customerName: name.trim(),
       customerPhone: ten.length === 10 ? `+7${ten}` : phone.trim(),
       seats: selected,
-      paymentPdfFile: pdfFile,
     });
   };
 
@@ -133,22 +130,6 @@ export default function BookingSidebar({
               />
               <p className="mt-1 text-[0.65rem] text-zinc-500">
                 Введите цифры номера — формат подставится сам
-              </p>
-            </div>
-            <div>
-              <label htmlFor="booking-pdf" className="block text-[0.7rem] uppercase tracking-wider text-zinc-500">
-                Подтверждение оплаты (PDF)
-              </label>
-              <input
-                id="booking-pdf"
-                type="file"
-                accept=".pdf,application/pdf"
-                onChange={(e) => setPdfFile(e.target.files?.[0] || null)}
-                className="mt-1 w-full rounded border border-zinc-600 bg-zinc-800/50 px-3 py-2 text-cream file:mr-2 file:rounded file:border-0 file:bg-gold/20 file:px-2 file:py-1 file:text-[0.7rem] file:text-gold"
-                required
-              />
-              <p className="mt-1 text-[0.65rem] text-zinc-500">
-                Приложите скрин или чек оплаты в PDF — для проверки менеджером
               </p>
             </div>
             {error && (

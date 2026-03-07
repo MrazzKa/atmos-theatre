@@ -19,6 +19,8 @@ export default function PaymentStep({
 }) {
   const [step, setStep] = useState("payment"); // "payment" | "thanks"
   const [confirming, setConfirming] = useState(false);
+  const [pdfFile, setPdfFile] = useState(null);
+  const [attachError, setAttachError] = useState("");
   const [secondsLeft, setSecondsLeft] = useState(HOLD_MINUTES * 60);
   const [createdAt] = useState(() => Date.now());
 
@@ -38,8 +40,22 @@ export default function PaymentStep({
   const timerStr = `${String(mm).padStart(2, "0")}:${String(ss).padStart(2, "0")}`;
 
   const handleConfirm = async () => {
+    if (!pdfFile) return;
     setConfirming(true);
+    setAttachError("");
     try {
+      const formData = new FormData();
+      formData.append("file", pdfFile);
+      const attachRes = await fetch(`/api/booking/order/${orderId}/attach-payment-pdf`, {
+        method: "POST",
+        body: formData,
+      });
+      const attachData = await attachRes.json().catch(() => ({}));
+      if (!attachRes.ok) {
+        setAttachError(attachData.error || "Не удалось загрузить PDF");
+        return;
+      }
+
       const res = await fetch("/api/booking/confirm-payment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -133,11 +149,11 @@ export default function PaymentStep({
       <ol className="mt-6 list-decimal space-y-2 pl-5 text-sm text-zinc-300">
         <li>Нажмите кнопку ниже — откроется Kaspi</li>
         <li>Введите точную сумму: {totalAmount.toLocaleString("ru")}₸</li>
-        <li>Оплатите</li>
-        <li>Вернитесь и нажмите «Я оплатил»</li>
+        <li>Оплатите и сохраните скрин или чек в PDF</li>
+        <li>Вернитесь сюда, приложите PDF и нажмите «Я оплатил»</li>
       </ol>
 
-      <div className="mt-6 flex flex-col gap-3">
+      <div className="mt-6 flex flex-col gap-4">
         <a
           href={KASPI_PAY_URL}
           target="_blank"
@@ -147,11 +163,33 @@ export default function PaymentStep({
           <span className="inline-block h-6 w-6 rounded bg-[#e21a1a]" title="Kaspi" />
           Оплатить через Kaspi
         </a>
+
+        <div>
+          <label htmlFor="payment-pdf" className="block text-[0.7rem] uppercase tracking-wider text-zinc-500">
+            Подтверждение оплаты (PDF)
+          </label>
+          <input
+            id="payment-pdf"
+            type="file"
+            accept=".pdf,application/pdf"
+            onChange={(e) => {
+              setPdfFile(e.target.files?.[0] || null);
+              setAttachError("");
+            }}
+            className="mt-1 w-full rounded border border-zinc-600 bg-zinc-800/50 px-3 py-2 text-cream file:mr-2 file:rounded file:border-0 file:bg-gold/20 file:px-2 file:py-1 file:text-[0.7rem] file:text-gold"
+          />
+          <p className="mt-1 text-[0.65rem] text-zinc-500">
+            Приложите скрин или чек оплаты — после этого станет доступна кнопка «Я оплатил»
+          </p>
+        </div>
+
+        {attachError && <p className="text-sm text-red-400">{attachError}</p>}
+
         <button
           type="button"
           onClick={handleConfirm}
-          disabled={confirming}
-          className="rounded-sm border border-gold/60 px-6 py-3 font-body text-[0.7rem] uppercase tracking-wider text-gold hover:border-gold hover:bg-gold/10 disabled:opacity-50"
+          disabled={!pdfFile || confirming}
+          className="rounded-sm border border-gold/60 px-6 py-3 font-body text-[0.7rem] uppercase tracking-wider text-gold hover:border-gold hover:bg-gold/10 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {confirming ? "Отправка…" : "Я оплатил"}
         </button>

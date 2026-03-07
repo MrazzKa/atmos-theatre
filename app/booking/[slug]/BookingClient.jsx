@@ -33,26 +33,10 @@ export default function BookingClient({
     );
   };
 
-  const handleSubmit = async ({ customerName, customerPhone, seats, paymentPdfFile }) => {
+  const handleSubmit = async ({ customerName, customerPhone, seats }) => {
     setLoading(true);
     setCreateError("");
     try {
-      let paymentPdfUrl = null;
-      if (paymentPdfFile) {
-        const formData = new FormData();
-        formData.append("file", paymentPdfFile);
-        const uploadRes = await fetch("/api/booking/upload-pdf", {
-          method: "POST",
-          body: formData,
-        });
-        const uploadData = await uploadRes.json().catch(() => ({}));
-        if (!uploadRes.ok) {
-          setCreateError(uploadData.error || "Не удалось загрузить PDF");
-          return;
-        }
-        paymentPdfUrl = uploadData.url;
-      }
-
       const res = await fetch("/api/booking/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -61,7 +45,6 @@ export default function BookingClient({
           customerName,
           customerPhone,
           seats,
-          ...(paymentPdfUrl && { paymentPdfUrl }),
         }),
       });
       const data = await res.json().catch(() => ({}));
