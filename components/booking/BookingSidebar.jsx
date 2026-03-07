@@ -4,12 +4,16 @@ import { useState } from "react";
 
 const PHONE_REG = /^\+7\d{10}$/;
 
-function formatPhone(v) {
-  const digits = v.replace(/\D/g, "").slice(-10);
+/** Форматирует ввод как +7 (XXX) XXX-XX-XX. Пользователь вводит только цифры. */
+function formatPhoneDisplay(v) {
+  let digits = v.replace(/\D/g, "");
+  if (digits.length > 11) digits = digits.slice(0, 11);
+  // 8XXXXXXXXXX или 7XXXXXXXXXX → 10 цифр (национальный номер)
+  if (digits.length === 11 && (digits.startsWith("8") || digits.startsWith("7"))) digits = digits.slice(1);
   if (digits.length === 0) return "";
-  if (digits.length <= 3) return `+7 ${digits}`;
-  if (digits.length <= 6) return `+7 ${digits.slice(0, 3)} ${digits.slice(3)}`;
-  return `+7 ${digits.slice(0, 3)} ${digits.slice(3, 6)} ${digits.slice(6)}`;
+  if (digits.length <= 3) return `+7 (${digits}`;
+  if (digits.length <= 6) return `+7 (${digits.slice(0, 3)}) ${digits.slice(3)}`;
+  return `+7 (${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6, 8)}-${digits.slice(8, 10)}`;
 }
 
 export default function BookingSidebar({
@@ -24,26 +28,27 @@ export default function BookingSidebar({
   const [phone, setPhone] = useState("");
 
   const total = selected.length * pricePerSeat;
-  const phoneNormalized = phone.replace(/\D/g, "");
-  const phoneValid = phoneNormalized.length === 10 && phoneNormalized.startsWith("7");
-  const fullPhone = phoneValid ? `+7${phoneNormalized}` : phone;
+  const digitsOnly = phone.replace(/\D/g, "");
+  const hasEleven = digitsOnly.length === 11 && digitsOnly.startsWith("7");
+  const nationalTen = hasEleven ? digitsOnly.slice(1) : digitsOnly.slice(-10);
+  const phoneValid = nationalTen.length === 10;
   const formValid =
     selected.length > 0 &&
     name.trim().length >= 2 &&
-    (fullPhone.match(PHONE_REG) || (phoneNormalized.length === 10 && fullPhone.startsWith("+7")));
+    phoneValid;
 
   const handlePhoneChange = (e) => {
-    const v = e.target.value;
-    setPhone(formatPhone(v));
+    setPhone(formatPhoneDisplay(e.target.value));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!formValid || loading) return;
-    const normalized = phone.replace(/\D/g, "").slice(-10);
+    const digits = phone.replace(/\D/g, "");
+    const ten = digits.length === 11 && digits.startsWith("7") ? digits.slice(1) : digits.slice(-10);
     onSubmit({
       customerName: name.trim(),
-      customerPhone: normalized.length === 10 ? `+7${normalized}` : phone.trim(),
+      customerPhone: ten.length === 10 ? `+7${ten}` : phone.trim(),
       seats: selected,
     });
   };
@@ -109,12 +114,17 @@ export default function BookingSidebar({
               <input
                 id="booking-phone"
                 type="tel"
+                inputMode="numeric"
+                autoComplete="tel"
                 value={phone}
                 onChange={handlePhoneChange}
-                placeholder="+7 700 123 4567"
+                placeholder="+7 (700) 123-45-67"
                 className="mt-1 w-full rounded border border-zinc-600 bg-zinc-800/50 px-3 py-2 text-cream placeholder-zinc-500 focus:border-gold/50 focus:outline-none"
                 required
               />
+              <p className="mt-1 text-[0.65rem] text-zinc-500">
+                Введите цифры номера — формат подставится сам
+              </p>
             </div>
             {error && (
               <p className="text-sm text-red-400">{error}</p>
