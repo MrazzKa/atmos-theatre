@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Reveal from "./ui/Reveal";
@@ -8,6 +8,57 @@ import SectionHeader from "./ui/SectionHeader";
 import { shows } from "../lib/data";
 
 const INSTAGRAM_DM = "https://ig.me/m/atmos_theatre";
+const INSTAGRAM = "https://www.instagram.com/atmos_theatre/";
+
+function VideoModal({ title, videoSrc, onClose }) {
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, []);
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-black/95 p-4"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Видео"
+    >
+      <div
+        className="relative flex w-full max-w-[320px] flex-col rounded-xl border-2 border-gold/40 bg-gradient-to-b from-[#1a1814] to-[#0c0b09] p-4 shadow-[0_0_60px_rgba(0,0,0,0.9),0_0_0_1px_rgba(212,175,55,0.15)]"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="mb-3 flex items-center justify-between">
+          <p className="text-[0.75rem] uppercase tracking-[0.2em] text-gold">
+            {title} · Закусилье
+          </p>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-full p-1.5 text-zinc-400 transition hover:bg-white/10 hover:text-cream"
+            aria-label="Закрыть"
+          >
+            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div className="overflow-hidden rounded-lg border border-gold/25 bg-black">
+          <video
+            src={videoSrc}
+            className="aspect-[9/16] w-full object-cover"
+            controls
+            autoPlay
+            muted
+            playsInline
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function Afisha() {
   const [videoModal, setVideoModal] = useState(null);
@@ -19,6 +70,37 @@ export default function Afisha() {
     >
       <div className="mx-auto max-w-6xl px-5 md:px-8">
         <SectionHeader label="АФИША" title="Спектакли ATMOS" />
+
+        <Reveal className="mb-6">
+          <Link
+            href="/booking/don-zhuan"
+            className="flex flex-wrap items-center justify-center gap-3 rounded-lg border border-gold/30 bg-gradient-to-r from-gold/10 to-gold/5 px-5 py-4 text-center transition hover:border-gold/50 hover:from-gold/15 hover:to-gold/10"
+          >
+            <span className="rounded bg-gold/20 px-2.5 py-0.5 text-[0.65rem] font-body uppercase tracking-[0.28em] text-gold">
+              Премьера
+            </span>
+            <span className="font-heading text-lg text-cream md:text-xl">
+              В погоне за Дон Жуаном
+            </span>
+            <span className="text-sm text-zinc-400">— билеты в продаже</span>
+            <span className="text-[0.7rem] uppercase tracking-wider text-gold">→ Купить билет</span>
+          </Link>
+        </Reveal>
+
+        <Reveal className="mb-8">
+          <p className="text-center text-[0.8rem] text-zinc-400">
+            13 и 14 марта мы в Алматы!{" "}
+            <a
+              href={INSTAGRAM}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gold hover:underline"
+            >
+              Следите за анонсами в Instagram
+            </a>
+            .
+          </p>
+        </Reveal>
 
         <div className="grid gap-8 sm:grid-cols-2 xl:grid-cols-4">
           {shows.map((show, index) => (
@@ -137,36 +219,11 @@ export default function Afisha() {
       </div>
 
       {videoModal?.videoReel && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4"
-          onClick={() => setVideoModal(null)}
-          role="dialog"
-          aria-modal="true"
-          aria-label="Закрыть видео"
-        >
-          <div
-            className="relative max-h-[85vh] w-full max-w-[min(360px,95vw)]"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              type="button"
-              onClick={() => setVideoModal(null)}
-              className="absolute -top-10 right-0 text-zinc-400 hover:text-cream"
-              aria-label="Закрыть"
-            >
-              <span className="text-2xl">×</span>
-            </button>
-            <p className="mb-2 text-center text-sm text-gold">{videoModal.title} · Закусилье</p>
-            <video
-              src={videoModal.videoReel}
-              className="aspect-[9/16] w-full rounded-lg border border-gold/30 object-cover"
-              controls
-              autoPlay
-              muted
-              playsInline
-            />
-          </div>
-        </div>
+        <VideoModal
+          title={videoModal.title}
+          videoSrc={videoModal.videoReel}
+          onClose={() => setVideoModal(null)}
+        />
       )}
     </section>
   );

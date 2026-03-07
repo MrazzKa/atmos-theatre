@@ -110,6 +110,18 @@ body::after {
   }
 }
 
+@keyframes scrollLine {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scaleY(0.6);
+  }
+  50% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+}
+
 .nav-link {
   position: relative;
   font-family: var(--font-body), system-ui, -apple-system, BlinkMacSystemFont,
