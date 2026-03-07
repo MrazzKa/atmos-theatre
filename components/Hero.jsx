@@ -120,7 +120,7 @@ export default function Hero() {
         </motion.div>
 
         <motion.div
-          className="mt-10 flex flex-col items-center gap-3 md:mt-8 md:gap-4"
+          className="mt-12 flex flex-col items-center gap-3 md:mt-10 md:gap-4"
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.45 }}
